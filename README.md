@@ -21,8 +21,9 @@ APPROVED ≠ STILL_SAFE_TO_EXECUTE
 | `SECURITY.md` | Security model and threat model |
 
 ```bash
+mvn -q -DskipTests install
+mvn -q -pl safeexec-lite-gateway exec:java -Dexec.mainClass=fun.autorun.safeexec.lite.Demo
 mvn -q test
-mvn -q -pl safeexec-lite-gateway compile exec:java -Dexec.mainClass=fun.autorun.safeexec.lite.Demo
 ```
 
 The demo shows three calls: a valid purchase, a model-invented field rejected before execution, and a timeout recorded as `UNKNOWN` (a side effect may exist). Lite stops there. Pro is what happens next: reconcile, idempotent resend, approval, recovery.
