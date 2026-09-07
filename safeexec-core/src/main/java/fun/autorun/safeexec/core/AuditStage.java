@@ -1,0 +1,31 @@
+package fun.autorun.safeexec.core;
+
+/** Every gateway stage appends exactly one audit event. Order matters: DISPATCHING is committed before the external call. */
+public enum AuditStage {
+    REQUEST_RECEIVED,
+    UNKNOWN_TOOL,
+    VALIDATED,
+    VALIDATION_FAILED,
+    POLICY_DECIDED,
+    DENIED,
+    APPROVAL_CHECKED,
+    APPROVAL_REQUIRED,
+    APPROVAL_GRANTED,
+    APPROVAL_REJECTED,
+    APPROVAL_EXPIRED,
+    APPROVAL_SUPERSEDED,
+    SHADOW_BLOCKED,
+    EVIDENCE_CHECKED,
+    POLICY_REEVALUATED,
+    APPROVAL_BOUND,
+    INTENT_EXECUTING,
+    ATTEMPT_CREATED,
+    DISPATCHING,
+    SUCCEEDED,
+    DEFINITIVE_FAILED,
+    UNKNOWN,
+    RECONCILING,
+    RECONCILED,
+    RETRY_RELEASED,
+    HELD
+}
