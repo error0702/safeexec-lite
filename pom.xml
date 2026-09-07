@@ -7,7 +7,7 @@
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SafeExec Lite</name>
-  <modules><module>safeexec-core</module></modules>
+  <modules><module>safeexec-core</module><module>safeexec-lite-gateway</module></modules>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

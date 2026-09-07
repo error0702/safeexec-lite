@@ -15,13 +15,17 @@ APPROVED ≠ STILL_SAFE_TO_EXECUTE
 
 | Path | Content |
 |---|---|
+| `safeexec-lite-gateway/` | `LiteToolGateway`: strict record-based argument conversion (unknown fields rejected), pluggable validator, in-memory audit event stream, `Demo.main` to run in 10 seconds. No policy, idempotency, approval or recovery — see below |
 | `safeexec-core/` | `Tool`, `ReconcilableTool`, `RecoveryResult` (Applied / ConfirmedNotApplied / Indeterminate), `RetrySafety`, `AttemptState` (incl. `RETRY_RELEASED`), `IntentStatus`, `PolicyFacts`, `PolicyEngine`, `Evidence`, `ApprovalStatus`, `AuditEvent`, `AuditStage`, `ToolGateway`, `ToolRegistry` (refuses policy / kill-switch names), `AgentPlanner` |
 | `docs/design/` | Six design notes: gateway, policy, intent/attempt/recovery, approval/evidence, audit, shadow |
 | `SECURITY.md` | Security model and threat model |
 
 ```bash
-./mvnw -q test   # or: mvn -q test
+mvn -q test
+mvn -q -pl safeexec-lite-gateway compile exec:java -Dexec.mainClass=fun.autorun.safeexec.lite.Demo
 ```
+
+The demo shows three calls: a valid purchase, a model-invented field rejected before execution, and a timeout recorded as `UNKNOWN` (a side effect may exist). Lite stops there. Pro is what happens next: reconcile, idempotent resend, approval, recovery.
 
 ## What is in Pro
 
