@@ -38,11 +38,11 @@ class LiteToolGatewayTest {
 
     private List<AuditStage> stages() { return audit.all().stream().map(AuditEvent::stage).toList(); }
 
-    @Test @DisplayName("Happy path: VALIDATED → DISPATCHING → SUCCEEDED, executed once")
+    @Test @DisplayName("Happy path: VALIDATED → ATTEMPT_CREATED → DISPATCHING → SUCCEEDED, executed once")
     void happyPath() {
         ToolResult r = gateway.invoke(new ToolCall("createPurchase", Map.of("orderId", "o1", "total", 100)), agent);
         assertThat(r).isInstanceOf(ToolResult.Executed.class);
-        assertThat(stages()).containsExactly(AuditStage.REQUEST_RECEIVED, AuditStage.VALIDATED, AuditStage.DISPATCHING, AuditStage.SUCCEEDED);
+        assertThat(stages()).containsExactly(AuditStage.REQUEST_RECEIVED, AuditStage.VALIDATED, AuditStage.ATTEMPT_CREATED, AuditStage.DISPATCHING, AuditStage.SUCCEEDED);
         assertThat(executions.get()).isEqualTo(1);
     }
 
@@ -67,12 +67,14 @@ class LiteToolGatewayTest {
         assertThat(stages()).containsExactly(AuditStage.REQUEST_RECEIVED, AuditStage.UNKNOWN_TOOL);
     }
 
-    @Test @DisplayName("Explicit refusal is DEFINITIVE_FAILED; a timeout is UNKNOWN, never FAILED, and Lite does not retry")
+    @Test @DisplayName("Explicit refusal is DEFINITIVE_FAILED; a timeout is UNKNOWN, never FAILED, and a NO_SAFE_RETRY tool is held instead of retried")
     void failureSemantics() {
         assertThat(gateway.invoke(new ToolCall("createPurchase", Map.of("orderId", "o1", "total", -1)), agent)).isInstanceOf(ToolResult.Failed.class);
-        assertThat(gateway.invoke(new ToolCall("createPurchase", Map.of("orderId", "o2", "total", 5000)), agent)).isInstanceOf(ToolResult.Unknown.class);
-        assertThat(stages()).contains(AuditStage.DEFINITIVE_FAILED, AuditStage.UNKNOWN);
-        assertThat(executions.get()).isEqualTo(2);
+        ToolResult timedOut = gateway.invoke(new ToolCall("createPurchase", Map.of("orderId", "o2", "total", 5000)), agent);
+        assertThat(timedOut).isInstanceOf(ToolResult.Held.class);
+        assertThat(((ToolResult.Held) timedOut).reason()).contains("NO_SAFE_RETRY");
+        assertThat(stages()).contains(AuditStage.DEFINITIVE_FAILED, AuditStage.UNKNOWN, AuditStage.HELD).doesNotContain(AuditStage.RECONCILING);
+        assertThat(executions.get()).as("no automatic retry after UNKNOWN").isEqualTo(2);
     }
 
     @Test @DisplayName("Pluggable validator runs after conversion")

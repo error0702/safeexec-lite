@@ -5,10 +5,20 @@
   <parent><groupId>fun.autorun</groupId><artifactId>safeexec-lite</artifactId><version>0.1.0-SNAPSHOT</version></parent>
   <artifactId>safeexec-lite-gateway</artifactId>
   <name>SafeExec Lite Gateway</name>
-  <description>A minimal, framework-free ToolGateway: converts and validates arguments, audits every stage, executes. No policy, no idempotency, no approval — that is Pro.</description>
+  <description>A minimal, framework-free ToolGateway: strict argument conversion, audit at every stage, in-memory Intent/Attempt idempotency and three-state recovery after a timeout. No policy, no approval, no shadow mode, nothing survives a crash — that is Pro.</description>
   <dependencies>
     <dependency><groupId>fun.autorun</groupId><artifactId>safeexec-core</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
     <dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration><mainClass>fun.autorun.safeexec.lite.Demo</mainClass></configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
